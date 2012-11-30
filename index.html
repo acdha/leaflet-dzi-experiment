@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="content-type" content="text/html; charset=utf-8">
+        <title>DZI viewer using Leaftlet.js</title>
+        <!-- inspired by https://gist.github.com/3004639 and substantially updated -->
+
+        <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.4.5/leaflet.css">
+        <!--[if lte IE 8]>
+            <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.4.5/leaflet.ie.css" />
+        <![endif]-->
+
+        <style>
+            html, body, #map {
+                height: 100%;
+                width: 100%;
+                margin: 0;
+                padding: 0;
+            }
+
+            /*
+               Leaflet sets CSS assuming that all tiles are exactly 256x256. Our tiles around image
+               edges are variable-sized so we need to override this:
+            */
+            img.leaflet-tile {
+                height: auto!important;
+                width: auto!important;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="map"></div>
+        <script src="http://cdn.leafletjs.com/leaflet-0.4.5/leaflet.js"></script>
+        <script>
+            /*
+            This will get much easier:
+                https://github.com/CloudMade/Leaflet/issues/210
+                https://github.com/CloudMade/Leaflet/pull/676
+            */
+
+            L.Projection.NoWrap = {
+                project: function (latlng) {
+                    return new L.Point(latlng.lng, latlng.lat);
+                },
+
+                unproject: function (point, unbounded) {
+                    return new L.LatLng(point.y, point.x, true);
+                }
+            };
+
+            L.CRS.Direct = L.Util.extend({}, L.CRS, {
+                code: 'Direct',
+                projection: L.Projection.NoWrap,
+                transformation: new L.Transformation(1, 0, 1, 0)
+            });
+
+            var map = new L.Map('map', {
+                crs: L.CRS.Direct,
+                worldCopyJump: false,
+                center: [0, 0],
+                minZoom: 7,
+                maxZoom: 13,
+                zoom: 10
+            });
+
+            L.tileLayer('http://content.wdl.org/4032/service/dzi/1/1_files/{z}/{x}_{y}.jpg',
+            {
+                noWrap: true,
+                continuousWorld: false,
+                minZoom: 7,
+                maxZoom: 13
+            }).addTo(map);
+
+            // Master Height: 4396
+            // Master Width: 7152
+
+            /*
+                Sadly map maxBounds is not quite what we want because it will avoid the user being
+                able to zoom out to see the entire image when the aspect ratio doesn't match that
+                of the browser window.
+
+                There's no good solution without https://github.com/CloudMade/Leaflet/pull/401 which
+                adds a bounds option to TileLayer. Until then, we'll take the lesser evil which is
+                simply ignoring a large number of 404s which the browser will throw attempting to
+                retrieve tiles outside of the tile layer extent
+            */
+
+            // map.setMaxBounds([
+            //     L.CRS.Direct.pointToLatLng(new L.Point(0, 0), 13),
+            //     L.CRS.Direct.pointToLatLng(new L.Point(7152, 4396), 13)
+            // ]);
+
+            map.fitBounds([
+                L.CRS.Direct.pointToLatLng(new L.Point(0, 00), 13),
+                L.CRS.Direct.pointToLatLng(new L.Point(7152, 4396), 13)
+            ]);
+        </script>
+    </body>
+</html>
