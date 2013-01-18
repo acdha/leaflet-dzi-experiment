@@ -6,9 +6,9 @@
         <title>DZI viewer using Leaftlet.js</title>
         <!-- inspired by https://gist.github.com/3004639 and substantially updated -->
 
-        <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.4.5/leaflet.css">
+        <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.5/leaflet.css">
         <!--[if lte IE 8]>
-            <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.4.5/leaflet.ie.css" />
+            <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.5/leaflet.ie.css" />
         <![endif]-->
 
         <style>
@@ -73,32 +73,15 @@
 
         <div id="map"></div>
         <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
-        <script src="http://cdn.leafletjs.com/leaflet-0.4.5/leaflet.js"></script>
+        <script src="http://cdn.leafletjs.com/leaflet-0.5/leaflet.js"></script>
         <script>
             /*
-            This will get much easier:
-                https://github.com/CloudMade/Leaflet/issues/210
+                This will get easier:
                 https://github.com/CloudMade/Leaflet/pull/676
             */
 
-            L.Projection.NoWrap = {
-                project: function (latlng) {
-                    return new L.Point(latlng.lng, latlng.lat);
-                },
-
-                unproject: function (point, unbounded) {
-                    return new L.LatLng(point.y, point.x, true);
-                }
-            };
-
-            L.CRS.Direct = L.Util.extend({}, L.CRS, {
-                code: 'Direct',
-                projection: L.Projection.NoWrap,
-                transformation: new L.Transformation(1, 0, 1, 0)
-            });
-
             var map = new L.Map('map', {
-                crs: L.CRS.Direct,
+                crs: L.CRS.Simple,
                 worldCopyJump: false,
                 center: [0, 0],
                 minZoom: 7,
@@ -131,15 +114,15 @@
                 */
 
                 // map.setMaxBounds([
-                //     L.CRS.Direct.pointToLatLng(new L.Point(0, 0), 13),
-                //     L.CRS.Direct.pointToLatLng(new L.Point(7152, 4396), 13)
+                //     L.CRS.Simple.pointToLatLng(new L.Point(0, 0), 13),
+                //     L.CRS.Simple.pointToLatLng(new L.Point(7152, 4396), 13)
                 // ]);
                 map.fitBounds([
-                    L.CRS.Direct.pointToLatLng(new L.Point(0, 0), 13),
-                    L.CRS.Direct.pointToLatLng(new L.Point(width, height), 13)
+                    L.CRS.Simple.pointToLatLng(new L.Point(0, 0), 13),
+                    L.CRS.Simple.pointToLatLng(new L.Point(width, height), 13)
                 ]);
 
-                map.setView(L.CRS.Direct.pointToLatLng(new L.Point(width / 2, height / 2), 13), 10);
+                map.setView(L.CRS.Simple.pointToLatLng(new L.Point(width / 2, height / 2), 13), 10);
             }
 
             $("#dzi-url").change(function () {

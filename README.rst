@@ -26,10 +26,6 @@ Issues & Oddities
 
 * Leaflet currently lacks a way to set boundaries for TileLayers, which causes 404s for all parts of
   the viewport outside of the image extents (see https://github.com/CloudMade/Leaflet/pull/401)
-* Until https://github.com/CloudMade/Leaflet/issues/210 and
-  https://github.com/CloudMade/Leaflet/pull/676 are closed we have some boilerplate creating a
-  straight coordinate system which doesn't attempt to treat our source image as geography with the
-  associated coordinate transforms.
 * Leaflet assumes that image tiles are all 256x256. The tiles around the edge of the master image in
   our DZI stacks are not constant size and so we have to override the CSS setting the image
   dimensions. It's not clear whether this has a significant performance impact on any particular
